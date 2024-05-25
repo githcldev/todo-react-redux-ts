@@ -1,6 +1,5 @@
 import React from 'react';
 import { useSelector, useDispatch } from "react-redux";
-
 import { changeView } from "./reducers/todo/todoSlice";
 import { PostsList } from "./components/todos/TodosList";
 import { AddPostForm } from "./components/todos/AddTodoForm";

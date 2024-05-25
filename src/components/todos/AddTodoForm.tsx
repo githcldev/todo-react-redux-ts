@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../common/store";
-import { addNewTodo, todoUpdated, changeView } from "../../reducers/todo/todoSlice";
-import { AppDispatch } from "../../common/store"
+import { todoAdded, todoUpdated, changeView } from "../../reducers/todo/todoSlice";
+import { AppDispatch } from "../../common/store";
 // import { Todo } from "../../reducers/todo/Todo";
 export const AddPostForm = () => {
   const currentView = useSelector((state: RootState) => state.todos.view);
@@ -10,15 +10,12 @@ export const AddPostForm = () => {
   let [title, setTitle] = useState("");
   let [completed, setCompleted] = useState(false);
   if (currentView === 'edit') {
-    debugger;
     title = currentTodo.title; completed = currentTodo.completed
   }
-  debugger;
   const dispatch = useDispatch<AppDispatch>();
   const onSaveTodoClicked = async () => {
     console.log('onSaveTodoClicked')
     if (currentView === 'edit') {
-      debugger;
       dispatch(
         todoUpdated({
           id: currentTodo.id,
@@ -26,7 +23,7 @@ export const AddPostForm = () => {
         })
       );
     } else {
-      await dispatch(addNewTodo({ title, completed })).unwrap();
+      await dispatch(todoAdded({ title, completed }));
     }
     setTitle("");
     setCompleted(false);

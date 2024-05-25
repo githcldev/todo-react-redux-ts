@@ -3,7 +3,6 @@ import {
   nanoid,
   PayloadAction,
   createAsyncThunk,
-  createSelector,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
 import { Todo } from "./Todo";
@@ -12,12 +11,21 @@ import produce from 'immer';
 const todosAdapter = createEntityAdapter<Todo>({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
-const initialState = todosAdapter.getInitialState({
+interface InitState {
+  status: string;
+  error: null | string;
+  view: string;
+  currentTodo: null | Todo;
+  todos: Todo[]
+}
+let initState: InitState = {
   status: "idle",
   error: null,
   view: "add",     // edit
-  currentTodo: null
-});
+  currentTodo: null,
+  todos: []
+}
+const initialState = todosAdapter.getInitialState(initState);
 export const fetchTodos: any = createAsyncThunk(
   "todos/fetchTodos",
   async (_, { getState }) => {
@@ -27,79 +35,49 @@ export const fetchTodos: any = createAsyncThunk(
     return allTodos;
   }
 );
-export const addNewTodo = createAsyncThunk(
-  "todos/addNewTodo",
-  async (initialTodo: any, api) => {
-    console.log('addNewTodo thunk')
-    debugger;
-    const { title, completed } = initialTodo;
-    let todoItem: Todo = {
-      id: nanoid(),
-      title,
-      completed,
-      date: new Date().toISOString()
-    }
-    return todoItem;
-  }
-);
 const todosSlice = createSlice({
   name: "todos",
   initialState: initialState,
   reducers: {
-    todoAdded: {
-      reducer(state, action: PayloadAction<Todo>) {
-        console.log('todoAdded reducer')
-        return produce(state, (draftState: { todos: Todo[] }) => {
-          draftState.todos.push(action.payload);
-        });
-      },
-      prepare(title, completed) {
-        console.log('todoAdded prepare')
-        return {
-          payload: {
-            id: nanoid(),
-            title,
-            completed,
-            date: new Date().toISOString()
-          },
-        };
-      },
+    todoAdded(state, action) {
+      console.log('todoAdded reducer')
+      const { title, completed } = action.payload;
+      let todoItem: Todo = {
+        id: nanoid(),
+        title,
+        completed,
+        date: new Date().toISOString()
+      }
+      state.todos = [...state.todos, todoItem]
     },
     todoUpdated(state, action) {
       console.log('todoUpdated reducer')
-      debugger;
       const { id, title, completed } = action.payload;
-      const existingTodo = state.entities[id];
+      const existingTodo = state.todos.find(todo => todo.id === id);
       if (existingTodo) {
         existingTodo.title = title;
         existingTodo.completed = completed;
       }
-      // reset state.todos.currentTodo to null
       state.currentTodo = null;
-      // change view to add
       state.view = 'add';
     },
     deleteTodo(state, action) {
       console.log('deleteTodo reducer')
-      debugger;
-      const { id, title, completed } = action.payload;
-      const existingTodo = state.entities[id];
-      if (existingTodo) {
-        existingTodo.title = title;
-        existingTodo.completed = completed;
-      }
+      const todo = action.payload;
+      state.todos.splice(action.payload, 1);
+      // delete todos[todoId]
+      // debugger;
     },
     completeTodo(state, action) {
       console.log('completeTodo reducer')
       const id = action.payload;
-      const existingTodo = state.entities[id];
+      const existingTodo = state.todos.find(todo => todo.id === id);
       if (existingTodo) {
         existingTodo.completed = !existingTodo.completed;
       }
     },
     changeView(state, action) {
       console.log('changeView reducer')
-      debugger;
       const { view, value } = action.payload;
       state.view = view;
       if (value) {
@@ -116,17 +94,22 @@ const todosSlice = createSlice({
         // Use the `upsertMany` reducer as a mutating update utility
         // todosAdapter.upsertMany(state, action.payload);
       })
-      .addCase(addNewTodo.fulfilled, todosAdapter.addOne);
+      // .addCase(addNewTodo.fulfilled, (state: any, action) => {
+      //   const value = { ...action.payload }
+      //   state.todos.push(value);
+      //   state.currentTodo = value;
+      // });
   },
   selectors: {
     selectAllTodos: (state) => {
       console.log('select all todos')
       console.log(state)
     },
-    selectTodoById: (state, todoId) => {
+    selectTodoById: (state: any, todoId) => {
       console.log('selectTodoById')
       console.log(state, todoId)
-      // state["todos"].filter(todo => todo.id === todoId)[0]
+      return null
+      // return state.todos.find(todo => todo.id === todoId)
     },
     selectTodoIds: (state) => {
       console.log('selectTodoIds');
