@@ -1,0 +1,9 @@
+.formLabel {
+    width: 100%;
+    margin: 10px 0px;
+    margin-top: 30px;
+    text-align: start;
+}
+.MuiInputBase-input {
+    text-align: start;
+}

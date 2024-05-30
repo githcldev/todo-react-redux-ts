@@ -58,7 +58,7 @@ export const AddPostForm = () => {
           }}
           checked={completed} /><br />
         <button type="button" onClick={onSaveTodoClicked} className="button">
-          Save Post</button>
+          Save</button>
       </form>
     </section>
   );

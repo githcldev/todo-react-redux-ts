@@ -37,4 +37,11 @@ article.post-excerpt {
 .App-link {
   color: #61dafb;
 }
+.navLinks a{
+  padding: 2px;
+  background-color: #61dafb;
+  margin: 1px;
+  cursor: pointer;
+  text-decoration: none;
+}
 

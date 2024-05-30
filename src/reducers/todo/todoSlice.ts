@@ -1,7 +1,6 @@
 import {
   createSlice,
   nanoid,
-  PayloadAction,
   createAsyncThunk,
   createEntityAdapter,
 } from "@reduxjs/toolkit";
@@ -127,5 +126,4 @@ export const {
   selectById: selectTodoById,
   selectIds: selectTodoIds
   // Pass in a selector that returns the posts slice of state
-} = todosAdapter.getSelectors((state: RootState) => state.todos)
-
+} = todosAdapter.getSelectors((state: RootState) => state.todos);
